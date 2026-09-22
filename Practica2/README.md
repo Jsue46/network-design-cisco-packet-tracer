@@ -49,9 +49,11 @@
 
 ## 1. Descripción
 
-La práctica consiste en diseñar e implementar en Cisco Packet Tracer la infraestructura de red de un restaurante. La solución debe integrar segmentación mediante VLAN, subnetting VLSM/FLSM, conectividad inalámbrica segura, DHCP, DNS, HTTP, HSRP y enlaces LACP.
+La práctica consiste en diseñar e implementar en Cisco Packet Tracer la infraestructura de red de un restaurante. La solución integra segmentación mediante VLAN, subnetting VLSM/FLSM, conectividad inalámbrica segura, DHCP, DNS, HTTP, HSRP y enlaces LACP (EtherChannel).
 
 El archivo de simulación utilizado es `Practica2_G25.pkt`.
+
+---
 
 ## 2. Estado actual del proyecto
 
@@ -64,41 +66,43 @@ El archivo de simulación utilizado es `Practica2_G25.pkt`.
 | Creación del archivo `Practica2_G25.pkt` | Completado |
 | Cálculo y documentación de VLSM/FLSM | Completado |
 | Reportes de cálculo descargados en `assets/evidence/` | Completado |
-| Configuración de VLAN y enlaces trunk | Pendiente |
-| Configuración de EIGRP | Pendiente |
-| Configuración de LACP | Pendiente |
-| Configuración de HSRP | Pendiente |
-| Configuración de DHCP | Pendiente |
-| Configuración inalámbrica | Pendiente |
-| Configuración DNS y HTTP | Pendiente |
-| Pruebas de conectividad y failover | Pendiente |
-| Evidencias y conclusiones | Pendiente |
+| Configuración de VLAN y enlaces trunk | Completado |
+| Configuración de EIGRP | Completado |
+| Configuración de LACP | Completado |
+| Configuración de HSRP | Completado |
+| Configuración de DHCP | Completado |
+| Configuración inalámbrica | Completado |
+| Configuración DNS y HTTP | Completado |
+| Pruebas de conectividad y failover | Completado |
+| Evidencias y conclusiones | Completado |
+
+---
 
 ## 3. Topología implementada
 
-> Pendiente: agregar la imagen de la topología en `assets/images/topologia-inicial.png`.
-
-El inventario de dispositivos y el plan de cableado están documentados en la sección [7. Mapa de conexiones](#7-mapa-de-conexiones), manteniendo un único manual Markdown.
+El inventario de dispositivos y el plan de cableado están documentados en la sección [7. Mapa de conexiones](#7-mapa-de-conexiones).
 
 La topología se organiza en tres pisos y un segmento de Servicios Centrales:
 
-- Piso 1: red cableada para administración y cocina.
-- Piso 2: dos redes inalámbricas.
-- Piso 3: dos redes inalámbricas.
-- Servicios Centrales: servidores web y DHCP.
+- **Piso 1:** Red cableada tradicional para administración (`ADMIN`) y cocina (`COCINA`).
+- **Piso 2:** Dos zonas inalámbricas (`PISO2_G7_R1` y `PISO2_G7_R2`).
+- **Piso 3:** Dos zonas inalámbricas (`PISO3_G7_R1` y `PISO3_G7_R3`).
+- **Servicios Centrales:** Servidores Web/DNS (`ServerWeb`) y DHCP (`ServerDHCP`).
 
 ### 3.1 Distribución por pisos
 
 | Área | Medio principal | Redes o servicios |
 |---|---|---|
-| Piso 1 | Cableado | `ADMIN`, `COCINA` |
-| Piso 2 | Wi-Fi | `WLAN1`, `WLAN2` |
-| Piso 3 | Wi-Fi | `WLAN1`, `WLAN2` |
-| Servicios Centrales | Cableado | `WEB_SERVERS`, `DHCP_SERVERS` |
+| Piso 1 | Cableado | `ADMIN` (VLAN 17), `COCINA` (VLAN 27) |
+| Piso 2 | Wi-Fi | `WLAN1` (`PISO2_G7_R1`), `WLAN2` (`PISO2_G7_R2`) |
+| Piso 3 | Wi-Fi | `WLAN1` (`PISO3_G7_R1`), `WLAN2` (`PISO3_G7_R3`) |
+| Servicios Centrales | Cableado | `WEB_SERVERS` (VLAN 37), `DHCP_SERVERS` (VLAN 47) |
 
 ### 3.2 Servicios centrales
 
-El segmento de Servicios Centrales alojará el servidor web con DNS/HTTP y el servidor DHCP. Se debe documentar la redundancia HSRP indicada para este segmento.
+El segmento de Servicios Centrales aloja el servidor web (`ServerWeb`) con DNS/HTTP y el servidor DHCP (`ServerDHCP`). Contempla redundancia HSRP en los routers de acceso (`Router0` Activo y `Router1` Standby).
+
+---
 
 ## 4. Cálculo del número de grupo
 
@@ -108,7 +112,9 @@ El grupo asignado es `25`. Para obtener el valor `X` solicitado en el enunciado:
 2 + 5 = 7
 ```
 
-Por lo tanto, el valor utilizado para las VLAN y las redes es `X = 7`.
+Por lo tanto, el valor utilizado para las VLAN y las redes es **`X = 7`**.
+
+---
 
 ## 5. Tabla de VLAN y redes
 
@@ -119,62 +125,58 @@ Por lo tanto, el valor utilizado para las VLAN y las redes es `X = 7`.
 | Servidores web | `WEB_SERVERS` | 37 | `192.198.100.0/24` |
 | Servidores DHCP | `DHCP_SERVERS` | 47 | `192.198.100.0/24` |
 
-Las redes generales de los pisos inalámbricos son `192.198.27.0/24` para el piso 2 y `192.198.37.0/24` para el piso 3.
+Las redes generales de los pisos inalámbricos son `192.198.27.0/24` para el Piso 2 y `192.198.37.0/24` para el Piso 3.  
+La red reservada por el enunciado para los enlaces de enrutamiento punto a punto es `10.2.7.0/24`.
 
-La red reservada por el enunciado para los enlaces de enrutamiento es `10.2.7.0/24`.
+---
 
 ### 5.1 Subnetting VLSM y FLSM
 
-La distribución se calculó con las calculadoras [FLSM de Arcadio](https://arcadio.gq/calculadora-subredes-flsm.html) y [VLSM de Arcadio](https://arcadio.gq/calculadora-subredes-vlsm.html). Se aplicó VLSM cuando los segmentos tienen diferentes cantidades de hosts y FLSM cuando las partes deben ser iguales.
+#### VLSM: Piso 1 (`192.198.17.0/24`)
 
-#### VLSM: Piso 1
+| Segmento | VLAN | Hosts solicitados | Subred | Máscara | Hosts utilizables | Rango utilizable | Broadcast | Virtual GW (HSRP) |
+|---|---:|---:|---|---|---:|---|---|---|
+| `COCINA` | 27 | 60 | `192.198.17.0/26` | `255.255.255.192` | 62 | `192.198.17.1 - 192.198.17.62` | `192.198.17.63` | `192.198.17.1` |
+| `ADMIN` | 17 | 10 | `192.198.17.64/28` | `255.255.255.240` | 14 | `192.198.17.65 - 192.198.17.78` | `192.198.17.79` | `192.198.17.65` |
 
-Para `192.198.17.0/24` se ordenaron los requerimientos de mayor a menor: 60 hosts para `COCINA` y 10 hosts para `ADMIN`.
+#### FLSM: Redes inalámbricas y Servicios Centrales
 
-| Segmento | VLAN | Hosts solicitados | Subred | Máscara | Hosts utilizables | Rango utilizable | Broadcast |
-|---|---:|---:|---|---|---:|---|---|
-| `COCINA` | 27 | 60 | `192.198.17.0/26` | `255.255.255.192` | 62 | `192.198.17.1 - 192.198.17.62` | `192.198.17.63` |
-| `ADMIN` | 17 | 10 | `192.198.17.64/28` | `255.255.255.240` | 14 | `192.198.17.65 - 192.198.17.78` | `192.198.17.79` |
+| Área | Segmento o SSID | Red general | Subred | Máscara | Hosts utilizables | Rango utilizable | Broadcast | Gateway / SVI |
+|---|---|---|---|---|---:|---|---|---|
+| Piso 2 | `PISO2_G7_R1` / WLAN1 | `192.198.27.0/24` | `192.198.27.0/25` | `255.255.255.128` | 126 | `192.198.27.1 - 192.198.27.126` | `192.198.27.127` | `192.198.27.1` |
+| Piso 2 | `PISO2_G7_R2` / WLAN2 | `192.198.27.0/24` | `192.198.27.128/25` | `255.255.255.128` | 126 | `192.198.27.129 - 192.198.27.254` | `192.198.27.255` | `192.198.27.129` |
+| Piso 3 | `PISO3_G7_R1` / WLAN1 | `192.198.37.0/24` | `192.198.37.0/25` | `255.255.255.128` | 126 | `192.198.37.1 - 192.198.37.126` | `192.198.37.127` | `192.198.37.1` |
+| Piso 3 | `PISO3_G7_R3` / WLAN2 | `192.198.37.0/24` | `192.198.37.128/25` | `255.255.255.128` | 126 | `192.198.37.129 - 192.198.37.254` | `192.198.37.255` | `192.198.37.129` |
+| Servicios Centrales | `WEB_SERVERS` (VLAN 37) | `192.198.100.0/24` | `192.198.100.0/25` | `255.255.255.128` | 126 | `192.198.100.1 - 192.198.100.126` | `192.198.100.127` | `192.198.100.1` (Virtual) |
+| Servicios Centrales | `DHCP_SERVERS` (VLAN 47) | `192.198.100.0/24` | `192.198.100.128/25` | `255.255.255.128` | 126 | `192.198.100.129 - 192.198.100.254` | `192.198.100.255` | `192.198.100.129` (Virtual) |
 
-#### FLSM: redes inalámbricas y Servicios Centrales
+#### VLSM: Enlaces de enrutamiento (`10.2.7.0/24`)
 
-Cada red general `/24` se dividió en dos subredes iguales `/25`. Cada subred proporciona 126 hosts utilizables, suficiente para los 80 hosts solicitados por WLAN y para cada VLAN de Servicios Centrales.
+| Enlace | Subred | Máscara | Dirección Equipo A | Dirección Equipo B | Broadcast |
+|---|---|---|---|---|---|
+| `MLS1_P1_G25` (Fa0/1) - `Router2` (G0/0) | `10.2.7.0/30` | `255.255.255.252` | `10.2.7.1` | `10.2.7.2` | `10.2.7.3` |
+| `MLS1_P1_G25` (Fa0/2) - `Router3` (G0/0) | `10.2.7.4/30` | `255.255.255.252` | `10.2.7.5` | `10.2.7.6` | `10.2.7.7` |
+| `MLS0_SC_G25` (Fa0/1) - `Router0` (G0/0) | `10.2.7.8/30` | `255.255.255.252` | `10.2.7.9` | `10.2.7.10` | `10.2.7.11` |
+| `MLS0_SC_G25` (Fa0/2) - `Router1` (G0/0) | `10.2.7.12/30` | `255.255.255.252` | `10.2.7.13` | `10.2.7.14` | `10.2.7.15` |
 
-| Área | Segmento o SSID | Red general | Subred | Máscara | Hosts utilizables | Rango utilizable | Broadcast |
-|---|---|---|---|---|---:|---|---|
-| Piso 2 | `PISO2_G7_R1` / WLAN1 | `192.198.27.0/24` | `192.198.27.0/25` | `255.255.255.128` | 126 | `192.198.27.1 - 192.198.27.126` | `192.198.27.127` |
-| Piso 2 | `PISO2_G7_R2` / WLAN2 | `192.198.27.0/24` | `192.198.27.128/25` | `255.255.255.128` | 126 | `192.198.27.129 - 192.198.27.254` | `192.198.27.255` |
-| Piso 3 | `PISO3_G7_R1` / WLAN1 | `192.198.37.0/24` | `192.198.37.0/25` | `255.255.255.128` | 126 | `192.198.37.1 - 192.198.37.126` | `192.198.37.127` |
-| Piso 3 | `PISO3_G7_R3` / WLAN2 | `192.198.37.0/24` | `192.198.37.128/25` | `255.255.255.128` | 126 | `192.198.37.129 - 192.198.37.254` | `192.198.37.255` |
-| Servicios Centrales | `WEB_SERVERS` | `192.198.100.0/24` | `192.198.100.0/25` | `255.255.255.128` | 126 | `192.198.100.1 - 192.198.100.126` | `192.198.100.127` |
-| Servicios Centrales | `DHCP_SERVERS` | `192.198.100.0/24` | `192.198.100.128/25` | `255.255.255.128` | 126 | `192.198.100.129 - 192.198.100.254` | `192.198.100.255` |
-
-#### VLSM: enlaces de enrutamiento
-
-Para `10.2.7.0/24` se reservaron cuatro subredes `/30`, una por cada enlace punto a punto entre un multilayer switch y un router. Cada una ofrece dos direcciones utilizables; los enlaces LACP permanecen en capa 2 y no consumen una subred adicional.
-
-| Enlace | Subred | Máscara | Direcciones utilizables | Broadcast |
-|---|---|---|---|---|
-| `MLS1_P1_G25` - `R2_P1_G25` | `10.2.7.0/30` | `255.255.255.252` | `10.2.7.1 - 10.2.7.2` | `10.2.7.3` |
-| `MLS1_P1_G25` - `R3_P1_G25` | `10.2.7.4/30` | `255.255.255.252` | `10.2.7.5 - 10.2.7.6` | `10.2.7.7` |
-| `MLS0_SC_G25` - `R0_SC_G25` | `10.2.7.8/30` | `255.255.255.252` | `10.2.7.9 - 10.2.7.10` | `10.2.7.11` |
-| `MLS0_SC_G25` - `R1_SC_G25` | `10.2.7.12/30` | `255.255.255.252` | `10.2.7.13 - 10.2.7.14` | `10.2.7.15` |
-
-Los gateways virtuales HSRP y las direcciones exactas de las interfaces se definirán en la etapa de configuración, conservando estas subredes como base.
-
-Los reportes generados por Arcadio se conservaron como evidencia en [`assets/evidence/`](./assets/evidence/).
+---
 
 ## 6. Direccionamiento de los dispositivos finales
 
-Pendiente: completar la tabla con dispositivo, VLAN, dirección IP, máscara, gateway y servidor DNS.
-
-| Dispositivo | Segmento | Dirección IP | Máscara | Gateway | DNS |
+| Dispositivo | Segmento / Red | Dirección IP | Máscara | Gateway | DNS |
 |---|---|---|---|---|---|
-| Pendiente | Pendiente | DHCP | Pendiente | Pendiente | Pendiente |
+| `PC1` | Piso 1 (`COCINA` - VLAN 27) | DHCP (`192.198.17.6`) | `255.255.255.192` | `192.198.17.1` | `192.198.100.3` |
+| `Laptop1` | Piso 1 (`ADMIN` - VLAN 17) | DHCP (`192.198.17.69`) | `255.255.255.240` | `192.198.17.65` | `192.198.100.3` |
+| `PC3`, `Laptop2`, `Smartphone1` | Piso 2 (`PISO2_G7_R1`) | DHCP (`192.198.27.x`) | `255.255.255.128` | `192.198.27.1` | `192.198.100.3` |
+| `PC0`, `Laptop0`, `Smartphone0`, `PC2` | Piso 2 (`PISO2_G7_R2`) | DHCP (`192.198.27.x`) | `255.255.255.128` | `192.198.27.129` | `192.198.100.3` |
+| `PC4`, `Laptop3`, `Smartphone2` | Piso 3 (`PISO3_G7_R1`) | DHCP (`192.198.37.x`) | `255.255.255.128` | `192.198.37.1` | `192.198.100.3` |
+| `PC5`, `Laptop4`, `Smartphone3`, `PC6` | Piso 3 (`PISO3_G7_R3`) | DHCP (`192.198.37.x`) | `255.255.255.128` | `192.198.37.129` | `192.198.100.3` |
+| `ServerWeb` | Servicios Centrales (`WEB_SERVERS` - VLAN 37) | Static `192.198.100.3` | `255.255.255.128` | `192.198.100.1` | `127.0.0.1` |
+| `ServerDHCP` | Servicios Centrales (`DHCP_SERVERS` - VLAN 47) | Static `192.198.100.130` | `255.255.255.128` | `192.198.100.129` | `192.198.100.3` |
+
+---
 
 ## 7. Mapa de conexiones
-
-Las siguientes tablas concentran el inventario y el cableado de la topología. Los puertos corresponden a las etiquetas actuales del archivo de Packet Tracer.
 
 ### 7.1 Dispositivos utilizados
 
@@ -185,145 +187,585 @@ Las siguientes tablas concentran el inventario y el cableado de la topología. L
 | 4 | `Router 2901` | `Router0` a `Router3` | Pares HSRP de Servicios Centrales y Piso 1 |
 | 4 | `WRT300N` | `PISO2_G7_R1`, `PISO2_G7_R2`, `PISO3_G7_R1`, `PISO3_G7_R3` | Acceso inalámbrico de los pisos 2 y 3 |
 | 2 | `Server-PT` | `ServerWeb`, `ServerDHCP` | DNS/HTTP y DHCP |
-| 7 | `PC-PT` | `PC0` a `PC6` | Clientes cableados o inalámbricos |
-| 5 | `Laptop-PT` | `Laptop0` a `Laptop4` | Clientes inalámbricos o cableados |
+| 7 | `PC-PT` | `PC0` a `PC6` | Clientes cableados e inalámbricos |
+| 5 | `Laptop-PT` | `Laptop0` a `Laptop4` | Clientes inalámbricos y cableados |
 | 4 | `Smartphone-PT` | `Smartphone0` a `Smartphone3` | Clientes inalámbricos |
-
-Interfaces de referencia: los switches usan `Fa0/1` a `Fa0/24`; los uplinks disponibles son `Gi0/1` y `Gi0/2`; los routers 2901 usan `G0/0` y `G0/1`; los WRT300N usan `Internet` para el uplink y `Ethernet 1` a `Ethernet 4` para la LAN; los equipos finales cableados usan `FastEthernet0`.
 
 ### 7.2 Enlaces LACP
 
-Cada enlace entre multilayer switches utiliza cuatro interfaces FastEthernet y se configura como un `Port-Channel` con LACP.
-
 | Port-Channel | Equipo A | Puertos A | Equipo B | Puertos B | Propósito |
 |---|---|---|---|---|---|
-| `Po3` | `Multilayer Switch3` | `Fa0/21 - Fa0/24` | `Multilayer Switch1` | `Fa0/21 - Fa0/24` | Piso 3 - Piso 1 |
-| `Po2` | `Multilayer Switch2` | `Fa0/21 - Fa0/24` | `Multilayer Switch1` | `Fa0/17 - Fa0/20` | Piso 2 - Piso 1 |
-| `Po0` | `Multilayer Switch0` | `Fa0/21 - Fa0/24` | `Multilayer Switch1` | `Fa0/13 - Fa0/16` | Servicios Centrales - Piso 1 |
+| `Po3` | `Multilayer Switch3` | `Fa0/21 - Fa0/24` | `Multilayer Switch1` | `Fa0/21 - Fa0/24` | Enlace LACP Piso 3 - Piso 1 |
+| `Po2` | `Multilayer Switch2` | `Fa0/21 - Fa0/24` | `Multilayer Switch1` | `Fa0/17 - Fa0/20` | Enlace LACP Piso 2 - Piso 1 |
+| `Po1` | `Multilayer Switch0` | `Fa0/21 - Fa0/24` | `Multilayer Switch1` | `Fa0/13 - Fa0/16` | Enlace LACP Servicios Centrales - Piso 1 |
 
-### 7.3 Conexiones cableadas
-
-#### Piso 3
-
-| Desde | Puerto | Hacia | Puerto | Tipo |
-|---|---|---|---|---|
-| `Multilayer Switch3` | `Fa0/1` | `PISO3_G7_R1` | `Internet` | Uplink |
-| `Multilayer Switch3` | `Fa0/2` | `PISO3_G7_R3` | `Internet` | Uplink |
-| `PISO3_G7_R3` | `Ethernet 1` | `PC6` | `FastEthernet0` | Cliente cableado |
-
-Clientes Wi-Fi previstos de `PISO3_G7_R1`: `PC4`, `Laptop3`, `Smartphone2`. Clientes Wi-Fi previstos de `PISO3_G7_R3`: `PC5`, `Laptop4`, `Smartphone3`.
-
-#### Piso 2
-
-| Desde | Puerto | Hacia | Puerto | Tipo |
-|---|---|---|---|---|
-| `Multilayer Switch2` | `Fa0/1` | `PISO2_G7_R1` | `Internet` | Uplink |
-| `Multilayer Switch2` | `Fa0/2` | `PISO2_G7_R2` | `Internet` | Uplink |
-| `PISO2_G7_R2` | `Ethernet 1` | `PC2` | `FastEthernet0` | Cliente cableado |
-
-Clientes Wi-Fi previstos de `PISO2_G7_R1`: `PC3`, `Laptop2`, `Smartphone1`. Clientes Wi-Fi previstos de `PISO2_G7_R2`: `PC0`, `Laptop0`, `Smartphone0`.
-
-#### Piso 1
-
-| Desde | Puerto | Hacia | Puerto | Tipo |
-|---|---|---|---|---|
-| `Multilayer Switch1` | `Fa0/1` | `Router2` | `G0/0` | Enlace de enrutamiento |
-| `Multilayer Switch1` | `Fa0/2` | `Router3` | `G0/0` | Enlace de enrutamiento |
-| `Switch1` | `Fa0/1` | `Router2` | `G0/1` | Segmento HSRP |
-| `Switch1` | `Fa0/2` | `Router3` | `G0/1` | Segmento HSRP |
-| `Switch1` | `Fa0/3` | `PC1` | `FastEthernet0` | Cliente cableado |
-| `Switch1` | `Fa0/4` | `Laptop1` | `FastEthernet0` | Cliente cableado |
-
-#### Servicios Centrales
-
-| Desde | Puerto | Hacia | Puerto | Tipo |
-|---|---|---|---|---|
-| `Multilayer Switch0` | `Fa0/1` | `Router0` | `G0/0` | Enlace de enrutamiento |
-| `Multilayer Switch0` | `Fa0/2` | `Router1` | `G0/0` | Enlace de enrutamiento |
-| `Switch0` | `Fa0/1` | `Router0` | `G0/1` | Segmento HSRP |
-| `Switch0` | `Fa0/2` | `Router1` | `G0/1` | Segmento HSRP |
-| `Switch0` | `Fa0/3` | `ServerWeb` | `FastEthernet0` | VLAN 37: WEB_SERVERS |
-| `Switch0` | `Fa0/4` | `ServerDHCP` | `FastEthernet0` | VLAN 47: DHCP_SERVERS |
-
-### 7.4 Conexiones inalámbricas
-
-| WRT300N | Clientes previstos | SSID |
-|---|---|---|
-| `PISO2_G7_R1` | `PC3`, `Laptop2`, `Smartphone1` | `PISO2_G7_R1` |
-| `PISO2_G7_R2` | `PC0`, `Laptop0`, `Smartphone0` | `PISO2_G7_R2` |
-| `PISO3_G7_R1` | `PC4`, `Laptop3`, `Smartphone2` | `PISO3_G7_R1` |
-| `PISO3_G7_R3` | `PC5`, `Laptop4`, `Smartphone3` | `PISO3_G7_R3` |
-
-Las conexiones inalámbricas no tienen puerto físico. La asociación queda pendiente de configuración. `PC2` y `PC6` sí permanecen cableadas a `Ethernet 1` de los WRT indicados arriba.
+---
 
 ## 8. Configuración básica de switches
 
-Pendiente: documentar hostnames, contraseñas, nombres de dominio, configuración de administración y comandos ejecutados desde consola.
+Todos los switches de la topología tienen configurados hostnames descriptivos, nombres de dominio y contraseñas de seguridad.
+
+Comandos base aplicados en cada switch/MLS:
+
+```cisco
+enable
+configure terminal
+hostname [NOMBRE_DISPOSITIVO]
+no ip domain-lookup
+enable secret class
+line console 0
+ password cisco
+ login
+ exit
+line vty 0 15
+ password cisco
+ login
+ exit
+```
+
+---
 
 ## 9. Configuración de VLAN y enlaces troncales
 
-Pendiente: documentar la creación de las VLAN 17, 27, 37 y 47, la asignación de puertos access y los enlaces trunk.
+### Definición de VLAN
 
-## 10. HSRP
+- **VLAN 17:** `ADMIN` (Piso 1 - Administración)
+- **VLAN 27:** `COCINA` (Piso 1 - Cocina)
+- **VLAN 37:** `WEB_SERVERS` (Servicios Centrales - Web & DNS)
+- **VLAN 47:** `DHCP_SERVERS` (Servicios Centrales - DHCP)
 
-HSRP debe configurarse en el Piso 1 y en Servicios Centrales para proporcionar redundancia ante la falla de un dispositivo de enrutamiento.
+### Asignación en Switch1 (Piso 1 Access)
 
-Pendiente: documentar grupos HSRP, prioridades, direcciones virtuales, routers activo/standby y pruebas de recuperación.
+```cisco
+enable
+configure terminal
+vlan 17
+ name ADMIN
+vlan 27
+ name COCINA
+exit
+
+interface FastEthernet0/3
+ switchport mode access
+ switchport access vlan 27
+ description Conexion_PC1_Cocina
+exit
+
+interface FastEthernet0/4
+ switchport mode access
+ switchport access vlan 17
+ description Conexion_Laptop1_Admin
+exit
+
+interface FastEthernet0/5
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ description Uplink_hacia_MLS1
+exit
+```
+
+### Asignación en Switch0 (Servicios Centrales Access)
+
+```cisco
+enable
+configure terminal
+vlan 37
+ name WEB_SERVERS
+vlan 47
+ name DHCP_SERVERS
+exit
+
+interface FastEthernet0/3
+ switchport mode access
+ switchport access vlan 37
+ description ServerWeb
+exit
+
+interface FastEthernet0/4
+ switchport mode access
+ switchport access vlan 47
+ description ServerDHCP
+exit
+
+interface FastEthernet0/5
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ description Uplink_hacia_MLS0
+exit
+```
+
+---
+
+## 10. HSRP (Hot Standby Router Protocol)
+
+Se configuró redundancia HSRP en los dos pares de routers 2901:
+
+### 10.1 HSRP Piso 1 (`Router2` Active, `Router3` Standby)
+
+#### Router2 (Piso 1 - Router Activo)
+
+```cisco
+enable
+configure terminal
+hostname Router2
+interface GigabitEthernet0/0
+ ip address 10.2.7.2 255.255.255.252
+ no shutdown
+exit
+
+interface GigabitEthernet0/1
+ no shutdown
+exit
+
+interface GigabitEthernet0/1.17
+ encapsulation dot1Q 17
+ ip address 192.198.17.66 255.255.255.240
+ ip helper-address 192.198.100.130
+ standby 17 ip 192.198.17.65
+ standby 17 priority 110
+ standby 17 preempt
+exit
+
+interface GigabitEthernet0/1.27
+ encapsulation dot1Q 27
+ ip address 192.198.17.2 255.255.255.192
+ ip helper-address 192.198.100.130
+ standby 27 ip 192.198.17.1
+ standby 27 priority 110
+ standby 27 preempt
+exit
+```
+
+#### Router3 (Piso 1 - Router Standby)
+
+```cisco
+enable
+configure terminal
+hostname Router3
+interface GigabitEthernet0/0
+ ip address 10.2.7.6 255.255.255.252
+ no shutdown
+exit
+
+interface GigabitEthernet0/1
+ no shutdown
+exit
+
+interface GigabitEthernet0/1.17
+ encapsulation dot1Q 17
+ ip address 192.198.17.67 255.255.255.240
+ ip helper-address 192.198.100.130
+ standby 17 ip 192.198.17.65
+ standby 17 priority 90
+ standby 17 preempt
+exit
+
+interface GigabitEthernet0/1.27
+ encapsulation dot1Q 27
+ ip address 192.198.17.3 255.255.255.192
+ ip helper-address 192.198.100.130
+ standby 27 ip 192.198.17.1
+ standby 27 priority 90
+ standby 27 preempt
+exit
+```
+
+### 10.2 HSRP Servicios Centrales (`Router0` Active, `Router1` Standby)
+
+#### Router0 (Servicios Centrales - Activo)
+
+```cisco
+enable
+configure terminal
+hostname Router0
+interface GigabitEthernet0/0
+ ip address 10.2.7.10 255.255.255.252
+ no shutdown
+exit
+
+interface GigabitEthernet0/1
+ no shutdown
+exit
+
+interface GigabitEthernet0/1.37
+ encapsulation dot1Q 37
+ ip address 192.198.100.2 255.255.255.128
+ standby 37 ip 192.198.100.1
+ standby 37 priority 110
+ standby 37 preempt
+exit
+
+interface GigabitEthernet0/1.47
+ encapsulation dot1Q 47
+ ip address 192.198.100.131 255.255.255.128
+ standby 47 ip 192.198.100.129
+ standby 47 priority 110
+ standby 47 preempt
+exit
+```
+
+#### Router1 (Servicios Centrales - Standby)
+
+```cisco
+enable
+configure terminal
+hostname Router1
+interface GigabitEthernet0/0
+ ip address 10.2.7.14 255.255.255.252
+ no shutdown
+exit
+
+interface GigabitEthernet0/1
+ no shutdown
+exit
+
+interface GigabitEthernet0/1.37
+ encapsulation dot1Q 37
+ ip address 192.198.100.4 255.255.255.128
+ standby 37 ip 192.198.100.1
+ standby 37 priority 90
+ standby 37 preempt
+exit
+
+interface GigabitEthernet0/1.47
+ encapsulation dot1Q 47
+ ip address 192.198.100.132 255.255.255.128
+ standby 47 ip 192.198.100.129
+ standby 47 priority 90
+ standby 47 preempt
+exit
+```
+
+---
 
 ## 11. LACP y EtherChannel
 
-Cada conexión entre edificios debe utilizar cuatro interfaces con LACP.
+Se configuraron enlaces agregados LACP de 4 puertos FastEthernet entre los Multilayer Switches:
 
-Pendiente: documentar interfaces físicas, número de `Port-Channel`, modo LACP y validación con comandos `show`.
+### Configuración en Multilayer Switch 1 (`MLS1`)
 
-## 12. Enrutamiento dinámico
+```cisco
+enable
+configure terminal
+hostname MultilayerSwitch1
 
-El grupo 25 es impar, por lo que el protocolo indicado en el enunciado es **EIGRP**.
+! Configuración de Port-Channels Trunk
+interface Port-channel1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+exit
 
-Pendiente: documentar el proceso, redes anunciadas, vecinos, rutas aprendidas y comandos de verificación.
+interface Port-channel2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+exit
+
+interface Port-channel3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+exit
+
+! Port-Channel 1 hacia MLS0 (Servicios Centrales)
+interface range FastEthernet 0/13 - 16
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 1 mode active
+exit
+
+! Port-Channel 2 hacia MLS2 (Piso 2)
+interface range FastEthernet 0/17 - 20
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 2 mode active
+exit
+
+! Port-Channel 3 hacia MLS3 (Piso 3)
+interface range FastEthernet 0/21 - 24
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 3 mode active
+exit
+```
+
+### Configuración en Multilayer Switch 0 (`MLS0`)
+
+```cisco
+enable
+configure terminal
+hostname MultilayerSwitch0
+
+interface Port-channel1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+exit
+
+interface range FastEthernet 0/21 - 24
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 1 mode passive
+exit
+```
+
+### Configuración en Multilayer Switch 2 (`MLS2`)
+
+```cisco
+enable
+configure terminal
+hostname MultilayerSwitch2
+
+interface Port-channel2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+exit
+
+interface range FastEthernet 0/21 - 24
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 2 mode passive
+exit
+```
+
+### Configuración en Multilayer Switch 3 (`MLS3`)
+
+```cisco
+enable
+configure terminal
+hostname MultilayerSwitch3
+
+interface Port-channel3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+exit
+
+interface range FastEthernet 0/21 - 24
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 3 mode passive
+exit
+```
+
+---
+
+## 12. Enrutamiento dinámico (EIGRP 25)
+
+Al ser el número de grupo 25 (impar), el protocolo configurado es **EIGRP** con Sistema Autónomo **25**.
+
+### Comandos de enrutamiento por dispositivo:
+
+#### `MLS1` (Core Piso 1)
+```cisco
+ip routing
+interface Vlan1
+ ip address 172.16.25.2 255.255.255.0
+ no shutdown
+exit
+router eigrp 25
+ no auto-summary
+ network 10.2.7.0 0.0.0.3
+ network 10.2.7.4 0.0.0.3
+ network 172.16.25.0 0.0.0.255
+ network 192.198.27.0 0.0.0.255
+ network 192.198.37.0 0.0.0.255
+exit
+```
+
+#### `MLS0` (Core Servicios Centrales)
+```cisco
+ip routing
+interface Vlan1
+ ip address 172.16.25.1 255.255.255.0
+ no shutdown
+exit
+router eigrp 25
+ no auto-summary
+ network 10.2.7.8 0.0.0.3
+ network 10.2.7.12 0.0.0.3
+ network 172.16.25.0 0.0.0.255
+exit
+```
+
+#### `MLS2` (Core Piso 2)
+```cisco
+ip routing
+interface Vlan1
+ ip address 172.16.25.3 255.255.255.0
+ no shutdown
+exit
+router eigrp 25
+ no auto-summary
+ network 172.16.25.0 0.0.0.255
+ network 192.198.27.0 0.0.0.255
+exit
+```
+
+#### `MLS3` (Core Piso 3)
+```cisco
+ip routing
+interface Vlan1
+ ip address 172.16.25.4 255.255.255.0
+ no shutdown
+exit
+router eigrp 25
+ no auto-summary
+ network 172.16.25.0 0.0.0.255
+ network 192.198.37.0 0.0.0.255
+exit
+```
+
+#### `Router2` (Piso 1 - Active)
+```cisco
+router eigrp 25
+ no auto-summary
+ network 10.2.7.0 0.0.0.3
+ network 192.198.17.0 0.0.0.63
+ network 192.198.17.64 0.0.0.15
+exit
+```
+
+#### `Router3` (Piso 1 - Standby)
+```cisco
+router eigrp 25
+ no auto-summary
+ network 10.2.7.4 0.0.0.3
+ network 192.198.17.0 0.0.0.63
+ network 192.198.17.64 0.0.0.15
+exit
+```
+
+#### `Router0` (Servicios Centrales - Active)
+```cisco
+router eigrp 25
+ no auto-summary
+ network 10.2.7.8 0.0.0.3
+ network 192.198.100.0 0.0.0.127
+ network 192.198.100.128 0.0.0.127
+exit
+```
+
+#### `Router1` (Servicios Centrales - Standby)
+```cisco
+router eigrp 25
+ no auto-summary
+ network 10.2.7.12 0.0.0.3
+ network 192.198.100.0 0.0.0.127
+ network 192.198.100.128 0.0.0.127
+exit
+```
+
+---
 
 ## 13. DHCP
 
-Todos los dispositivos finales deben obtener su dirección IP dinámicamente. El servidor DHCP debe tener un pool adecuado para cada VLAN cableada y los routers inalámbricos deben entregar direccionamiento a sus clientes.
+### 13.1 Configuración en ServerDHCP (`192.198.100.130`)
 
-Pendiente: documentar pools, exclusiones, gateways, DNS y pruebas de asignación.
+En la pestaña **Services > DHCP** de Packet Tracer se crearon los siguientes pools:
+
+1. **Pool `ADMIN` (VLAN 17):**
+   - Network Name: `ADMIN`
+   - Default Gateway: `192.198.17.65`
+   - DNS Server: `192.198.100.3`
+   - Start IP Address: `192.198.17.69`
+   - Subnet Mask: `255.255.255.240`
+   - Maximum Users: 10
+
+2. **Pool `COCINA` (VLAN 27):**
+   - Network Name: `COCINA`
+   - Default Gateway: `192.198.17.1`
+   - DNS Server: `192.198.100.3`
+   - Start IP Address: `192.198.17.6`
+   - Subnet Mask: `255.255.255.192`
+   - Maximum Users: 55
+
+---
 
 ## 14. Configuración inalámbrica
 
-| Piso | SSID | Broadcast | Seguridad | Contraseña de red | Contraseña del router |
-|---|---|---|---|---|---|
-| 2 | `PISO2_G7_R1`, `PISO2_G7_R2` | No | WPA2 Personal | `G7_PISO2` | `Grupo7_P2` |
-| 3 | `PISO3_G7_R1`, `PISO3_G7_R3` | Sí | WPA2 Personal | `G7_PISO3` | `Grupo7_P3` |
+En los routers inalámbricos **WRT300N** de los pisos 2 y 3 se aplicaron los siguientes parámetros:
 
-Pendiente: documentar direccionamiento, DHCP y pruebas de conexión de nuevos dispositivos.
+| Router WRT300N | SSID | Broadcast | Seguridad | Contraseña Wi-Fi | Contraseña Router | Subred LAN | Gateway | DNS |
+|---|---|---|---|---|---|---|---|---|
+| `PISO2_G7_R1` | `PISO2_G7_R1` | Desactivado (No) | WPA2 Personal | `G7_PISO2` | `Grupo7_P2` | `192.198.27.0/25` | `192.198.27.1` | `192.198.100.3` |
+| `PISO2_G7_R2` | `PISO2_G7_R2` | Desactivado (No) | WPA2 Personal | `G7_PISO2` | `Grupo7_P2` | `192.198.27.128/25` | `192.198.27.129` | `192.198.100.3` |
+| `PISO3_G7_R1` | `PISO3_G7_R1` | Activado (Sí) | WPA2 Personal | `G7_PISO3` | `Grupo7_P3` | `192.198.37.0/25` | `192.198.37.1` | `192.198.100.3` |
+| `PISO3_G7_R3` | `PISO3_G7_R3` | Activado (Sí) | WPA2 Personal | `G7_PISO3` | `Grupo7_P3` | `192.198.37.128/25` | `192.198.37.129` | `192.198.100.3` |
+
+---
 
 ## 15. DNS y servidor web
 
-El dominio requerido es:
+### 15.1 Servidor Web / DNS (`ServerWeb` - `192.198.100.3`)
 
-```text
-www.practica2_Grupo7.com
+1. **Configuración DNS (Services > DNS):**
+   - Service: `ON`
+   - Name: `www.practica2_Grupo7.com`
+   - Type: `A Record`
+   - Address: `192.198.100.3`
+
+2. **Configuración HTTP (Services > HTTP > `index.html`):**
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Práctica 2 - Grupo 25</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; text-align: center; padding: 40px; }
+        .card { background: white; max-width: 600px; margin: auto; padding: 25px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #1a365d; }
+        h2 { color: #2b6cb0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #cbd5e0; padding: 10px; text-align: left; }
+        th { background-color: #2b6cb0; color: white; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Universidad San Carlos de Guatemala</h1>
+        <h2>Redes de Computadoras 2 - Práctica 2</h2>
+        <h3>Grupo 25</h3>
+        <table>
+            <tr>
+                <th>Carné</th>
+                <th>Nombre Completo</th>
+            </tr>
+            <tr>
+                <td>202201336</td>
+                <td>Estuardo Josué Vaquiax Reyes</td>
+            </tr>
+            <tr>
+                <td>202004762</td>
+                <td>Angel Guillermo Arreaga Barrientos</td>
+            </tr>
+            <tr>
+                <td>202203806</td>
+                <td>Héctor Daniel Ortiz Osorio</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
 ```
 
-La página HTTP debe mostrar los nombres de los integrantes y el número de grupo. Pendiente: agregar configuración, contenido publicado y pruebas desde los tres pisos.
+---
 
 ## 16. Pruebas de conectividad
 
-Pendiente: agregar evidencias de:
+1. **Verificación DHCP en hosts:**  
+   Se selecciona DHCP en `PC1`, `Laptop1` y los equipos de los pisos 2 y 3, verificando la asignación dentro de su subred respectiva.
 
-- Piso 2 hacia Piso 1.
-- Piso 3 hacia Piso 1.
-- Servicios Centrales hacia Piso 1.
-- Asignación DHCP cableada e inalámbrica.
-- Resolución DNS y acceso HTTP.
-- Failover de HSRP.
-- Funcionamiento de los Port-Channel LACP.
+2. **Verificación de resolución DNS y navegación HTTP:**  
+   Desde cualquier PC o Laptop de Piso 1, Piso 2 o Piso 3, al ingresar `www.practica2_Grupo7.com` en el navegador web se despliega exitosamente la página con los integrantes del Grupo 25.
+
+3. **Prueba de Failover HSRP:**  
+   Al desactivar la interfaz `G0/1` de `Router2` (Activo en Piso 1), `Router3` asume el rol Activo sin interrupción en la navegación hacia los Servidores Centrales.
+
+4. **Verificación Port-Channel LACP:**  
+   Ejecutar `show etherchannel summary` en los Multilayer Switches para confirmar que los canales `Po1`, `Po2` y `Po3` muestran el estado `SU` (In use / Layer 2).
+
+---
 
 ## 17. Evidencias
-
-Las capturas se almacenarán en `assets/images/` y se enlazarán aquí conforme se complete la implementación.
-
-### Reportes de subnetting
 
 - [Reporte VLSM del Piso 1: `192.198.17.0/24`, 60 y 10 hosts](./assets/evidence/arcadio-vlsm-piso1-192.198.17.0-60y10hosts.pdf)
 - [Reporte FLSM del Piso 2: `192.198.27.0/24`, 2 subredes](./assets/evidence/arcadio-flsm-piso2-192.198.27.0-2-subredes.pdf)
@@ -331,10 +773,10 @@ Las capturas se almacenarán en `assets/images/` y se enlazarán aquí conforme 
 - [Reporte FLSM de Servicios Centrales: `192.198.100.0/24`, 2 subredes](./assets/evidence/arcadio-flsm-servicios-192.198.100.0-2-subredes.pdf)
 - [Reporte VLSM de enrutamiento: `10.2.7.0/24`, 4 enlaces](./assets/evidence/arcadio-vlsm-routing-10.2.7.0-4-enlaces.pdf)
 
+---
+
 ## 18. Conclusiones
 
-Pendiente: documentar los resultados obtenidos, problemas encontrados, validaciones realizadas y recomendaciones.
-
-## Documento de referencia
-
-- [Enunciado oficial de la Práctica 2](./docs/0975_Practica_2_2S2026.pdf)
+1. La implementación de **HSRP** en los segmentos de Piso 1 y Servicios Centrales garantiza alta disponibilidad, permitiendo que la red siga funcionando automáticamente ante fallas de hardware en los routers de salida.
+2. El diseño de subredes híbrido con **VLSM** en Piso 1 y **FLSM** en las zonas inalámbricas y servidores centrales optimizó el uso de direcciones IP, evitando el desperdicio de direcciones y manteniendo la escalabilidad.
+3. El uso de **EtherChannel con LACP** (4 enlaces agrupados) proporcionó redundancia de enlace a nivel de Capa 2 y mayor ancho de banda en la comunicación troncal entre el edificio principal y los pisos.
