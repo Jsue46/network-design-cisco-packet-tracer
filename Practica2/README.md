@@ -1,10 +1,10 @@
 # Práctica 2: Restaurante
 
-**Universidad San Carlos de Guatemala**  
-**Facultad de Ingeniería**  
-**Escuela de Ciencias y Sistemas**  
-**Curso:** Redes de Computadoras 2  
-**Semestre:** Segundo Semestre 2026  
+**Universidad San Carlos de Guatemala**
+**Facultad de Ingeniería**
+**Escuela de Ciencias y Sistemas**
+**Curso:** Redes de Computadoras 2
+**Semestre:** Segundo Semestre 2026
 **Grupo:** 25
 
 ### Integrantes
@@ -49,7 +49,7 @@
 
 ## 1. Descripción
 
-La práctica consiste en diseñar e implementar en Cisco Packet Tracer la infraestructura de red de un restaurante. La solución integra segmentación mediante VLAN, subnetting VLSM/FLSM, conectividad inalámbrica segura, DHCP, DNS, HTTP, HSRP y enlaces LACP (EtherChannel).
+La práctica consiste en diseñar e implementar en Cisco Packet Tracer la infraestructura de red de un restaurante. La solución integra segmentación mediante VLAN, subnetting VLSM/FLSM, conectividad inalámbrica segura, servicios DHCP, DNS y HTTP, así como mecanismos de redundancia HSRP y enlaces LACP (EtherChannel).
 
 El archivo de simulación utilizado es `Practica2_G25.pkt`.
 
@@ -61,7 +61,6 @@ El archivo de simulación utilizado es `Practica2_G25.pkt`.
 |---|---|
 | Creación de la carpeta de la práctica | Completado |
 | Copia del enunciado oficial en `docs/` | Completado |
-| Plantilla inicial del manual técnico | Completado |
 | Diseño de la topología | Completado |
 | Creación del archivo `Practica2_G25.pkt` | Completado |
 | Cálculo y documentación de VLSM/FLSM | Completado |
@@ -72,7 +71,7 @@ El archivo de simulación utilizado es `Practica2_G25.pkt`.
 | Configuración de HSRP | Completado |
 | Configuración de DHCP | Completado |
 | Configuración inalámbrica | Completado |
-| Configuración DNS y HTTP | Completado |
+| Configuración DNS y HTTP (dominio corregido a Grupo25) | Completado |
 | Pruebas de conectividad y failover | Completado |
 | Evidencias y conclusiones | Completado |
 
@@ -80,7 +79,7 @@ El archivo de simulación utilizado es `Practica2_G25.pkt`.
 
 ## 3. Topología implementada
 
-El inventario de dispositivos y el plan de cableado están documentados en la sección [7. Mapa de conexiones](#7-mapa-de-conexiones).
+![Topología general](./assets/images/topologia-general.png)
 
 La topología se organiza en tres pisos y un segmento de Servicios Centrales:
 
@@ -125,10 +124,8 @@ Por lo tanto, el valor utilizado para las VLAN y las redes es **`X = 7`**.
 | Servidores web | `WEB_SERVERS` | 37 | `192.198.100.0/24` |
 | Servidores DHCP | `DHCP_SERVERS` | 47 | `192.198.100.0/24` |
 
-Las redes generales de los pisos inalámbricos son `192.198.27.0/24` para el Piso 2 y `192.198.37.0/24` para el Piso 3.  
+Las redes generales de los pisos inalámbricos son `192.198.27.0/24` para el Piso 2 y `192.198.37.0/24` para el Piso 3.
 La red reservada por el enunciado para los enlaces de enrutamiento punto a punto es `10.2.7.0/24`.
-
----
 
 ### 5.1 Subnetting VLSM y FLSM
 
@@ -198,6 +195,30 @@ La red reservada por el enunciado para los enlaces de enrutamiento punto a punto
 | `Po3` | `Multilayer Switch3` | `Fa0/21 - Fa0/24` | `Multilayer Switch1` | `Fa0/21 - Fa0/24` | Enlace LACP Piso 3 - Piso 1 |
 | `Po2` | `Multilayer Switch2` | `Fa0/21 - Fa0/24` | `Multilayer Switch1` | `Fa0/17 - Fa0/20` | Enlace LACP Piso 2 - Piso 1 |
 | `Po1` | `Multilayer Switch0` | `Fa0/21 - Fa0/24` | `Multilayer Switch1` | `Fa0/13 - Fa0/16` | Enlace LACP Servicios Centrales - Piso 1 |
+
+### 7.3 Conexiones cableadas
+
+| Desde | Hacia | Descripción |
+|---|---|---|
+| `PC1` | `Switch1` (Fa0/3) | Host cableado - VLAN `COCINA` |
+| `Laptop1` | `Switch1` (Fa0/4) | Host cableado - VLAN `ADMIN` |
+| `Switch1` (Fa0/5, trunk) | `Multilayer Switch1` | Uplink Piso 1 hacia el núcleo |
+| `Router2` (G0/0) | `Multilayer Switch1` (Fa0/1) | Enlace routeado - par HSRP Activo Piso 1 (`10.2.7.0/30`) |
+| `Router3` (G0/0) | `Multilayer Switch1` (Fa0/2) | Enlace routeado - par HSRP Standby Piso 1 (`10.2.7.4/30`) |
+| `ServerWeb` | `Switch0` (Fa0/3) | Servidor DNS/HTTP - VLAN `WEB_SERVERS` |
+| `ServerDHCP` | `Switch0` (Fa0/4) | Servidor DHCP - VLAN `DHCP_SERVERS` |
+| `Switch0` (Fa0/5, trunk) | `Multilayer Switch0` | Uplink Servicios Centrales hacia el núcleo |
+| `Router0` (G0/0) | `Multilayer Switch0` (Fa0/1) | Enlace routeado - par HSRP Activo Servicios Centrales (`10.2.7.8/30`) |
+| `Router1` (G0/0) | `Multilayer Switch0` (Fa0/2) | Enlace routeado - par HSRP Standby Servicios Centrales (`10.2.7.12/30`) |
+
+### 7.4 Conexiones inalámbricas
+
+| Router WRT300N | Uplink cableado | Clientes inalámbricos |
+|---|---|---|
+| `PISO2_G7_R1` | `Multilayer Switch2` | `PC3`, `Laptop2`, `Smartphone1` |
+| `PISO2_G7_R2` | `Multilayer Switch2` | `PC0`, `Laptop0`, `Smartphone0`, `PC2` |
+| `PISO3_G7_R1` | `Multilayer Switch3` | `PC4`, `Laptop3`, `Smartphone2` |
+| `PISO3_G7_R3` | `Multilayer Switch3` | `PC5`, `Laptop4`, `Smartphone3`, `PC6` |
 
 ---
 
@@ -449,7 +470,6 @@ enable
 configure terminal
 hostname MultilayerSwitch1
 
-! Configuración de Port-Channels Trunk
 interface Port-channel1
  switchport trunk encapsulation dot1q
  switchport mode trunk
@@ -549,8 +569,6 @@ exit
 ## 12. Enrutamiento dinámico (EIGRP 25)
 
 Al ser el número de grupo 25 (impar), el protocolo configurado es **EIGRP** con Sistema Autónomo **25**.
-
-### Comandos de enrutamiento por dispositivo:
 
 #### `MLS1` (Core Piso 1)
 ```cisco
@@ -697,7 +715,7 @@ En los routers inalámbricos **WRT300N** de los pisos 2 y 3 se aplicaron los sig
 
 1. **Configuración DNS (Services > DNS):**
    - Service: `ON`
-   - Name: `www.practica2_Grupo7.com`
+   - Name: `www.practica2_Grupo25.com`
    - Type: `A Record`
    - Address: `192.198.100.3`
 
@@ -751,27 +769,45 @@ En los routers inalámbricos **WRT300N** de los pisos 2 y 3 se aplicaron los sig
 
 ## 16. Pruebas de conectividad
 
-1. **Verificación DHCP en hosts:**  
-   Se selecciona DHCP en `PC1`, `Laptop1` y los equipos de los pisos 2 y 3, verificando la asignación dentro de su subred respectiva.
-
-2. **Verificación de resolución DNS y navegación HTTP:**  
-   Desde cualquier PC o Laptop de Piso 1, Piso 2 o Piso 3, al ingresar `www.practica2_Grupo7.com` en el navegador web se despliega exitosamente la página con los integrantes del Grupo 25.
-
-3. **Prueba de Failover HSRP:**  
-   Al desactivar la interfaz `G0/1` de `Router2` (Activo en Piso 1), `Router3` asume el rol Activo sin interrupción en la navegación hacia los Servidores Centrales.
-
-4. **Verificación Port-Channel LACP:**  
-   Ejecutar `show etherchannel summary` en los Multilayer Switches para confirmar que los canales `Po1`, `Po2` y `Po3` muestran el estado `SU` (In use / Layer 2).
+| Prueba | Descripción | Resultado |
+|---|---|---|
+| DHCP Piso 1 | `PC1` y `Laptop1` obtienen dirección dentro de sus subredes `COCINA`/`ADMIN` | Exitoso |
+| DHCP Piso 2 y 3 | Todos los hosts cableados/inalámbricos obtienen dirección dentro de su WLAN correspondiente | Exitoso |
+| Resolución DNS y HTTP | Al ingresar `www.practica2_Grupo25.com` desde cualquier piso se despliega la página con los integrantes | Exitoso |
+| Failover HSRP Piso 1 | Al desactivar `G0/1` de `Router2` (Activo), `Router3` asume el rol Activo sin interrupción hacia Servicios Centrales | Exitoso |
+| Failover HSRP Servicios Centrales | Al desactivar `G0/1` de `Router0` (Activo), `Router1` asume el rol Activo | Exitoso |
+| Port-Channel LACP | `show etherchannel summary` en los Multilayer Switches confirma `Po1`, `Po2` y `Po3` en estado `SU` (In use / Layer 2) | Exitoso |
 
 ---
 
 ## 17. Evidencias
 
-- [Reporte VLSM del Piso 1: `192.198.17.0/24`, 60 y 10 hosts](./assets/evidence/arcadio-vlsm-piso1-192.198.17.0-60y10hosts.pdf)
-- [Reporte FLSM del Piso 2: `192.198.27.0/24`, 2 subredes](./assets/evidence/arcadio-flsm-piso2-192.198.27.0-2-subredes.pdf)
-- [Reporte FLSM del Piso 3: `192.198.37.0/24`, 2 subredes](./assets/evidence/arcadio-flsm-piso3-192.198.37.0-2-subredes.pdf)
-- [Reporte FLSM de Servicios Centrales: `192.198.100.0/24`, 2 subredes](./assets/evidence/arcadio-flsm-servicios-192.198.100.0-2-subredes.pdf)
-- [Reporte VLSM de enrutamiento: `10.2.7.0/24`, 4 enlaces](./assets/evidence/arcadio-vlsm-routing-10.2.7.0-4-enlaces.pdf)
+1. Topología completa.
+
+![Topología general](./assets/images/topologia-general.png)
+
+2. Asignación DHCP en hosts de Piso 1, Piso 2 y Piso 3.
+
+![Verificación DHCP](./assets/images/PruebaDHCP.png)
+
+3. Resolución DNS y despliegue de la página web (`www.practica2_Grupo25.com`).
+
+![Página web Grupo 25](./assets/images/PruebaWeb.png)
+
+4. Prueba de failover HSRP en Piso 1 y Servicios Centrales.
+
+![Failover HSRP](./assets/images/PruebaHSRP.png)
+
+5. Estado de los Port-Channel LACP (`show etherchannel summary`).
+
+![Port-Channel LACP](./assets/images/PruebaLACP.png)
+
+6. Reportes de cálculo de subnetting:
+   - [VLSM Piso 1: `192.198.17.0/24`, 60 y 10 hosts](./assets/evidence/arcadio-vlsm-piso1-192.198.17.0-60y10hosts.pdf)
+   - [FLSM Piso 2: `192.198.27.0/24`, 2 subredes](./assets/evidence/arcadio-flsm-piso2-192.198.27.0-2-subredes.pdf)
+   - [FLSM Piso 3: `192.198.37.0/24`, 2 subredes](./assets/evidence/arcadio-flsm-piso3-192.198.37.0-2-subredes.pdf)
+   - [FLSM Servicios Centrales: `192.198.100.0/24`, 2 subredes](./assets/evidence/arcadio-flsm-servicios-192.198.100.0-2-subredes.pdf)
+   - [VLSM enrutamiento: `10.2.7.0/24`, 4 enlaces](./assets/evidence/arcadio-vlsm-routing-10.2.7.0-4-enlaces.pdf)
 
 ---
 
