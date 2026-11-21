@@ -1,98 +1,78 @@
-# REDES2_2S_2026_G25
+# Network Infrastructure Design — Cisco Packet Tracer
 
-**Universidad San Carlos de Guatemala**  
-**Facultad de Ingeniería**  
-**Escuela de Ciencias y Sistemas**  
-**Curso:** Redes de Computadoras 2  
-**Semestre:** Segundo Semestre 2026  
-**Grupo:** 25  
+Academic project developed for the **Computer Networks 2** course at the Universidad de San Carlos de Guatemala (Second Semester 2026).
+
+This repository contains the network simulation files, technical documentation, and configuration evidence for two lab practices. All topologies were designed and validated in **Cisco Packet Tracer**. The project was developed collaboratively as a group assignment.
 
 ---
 
-## Información del Grupo
+## Overview
 
-| Carné | Nombre Completo |
-|---|---|
-| 202201336 | Estuardo Josué Vaquiax Reyes |
-| 202004762 | Angel Guillermo Arreaga Barrientos |
-| 202203806 | Héctor Daniel Ortiz Osorio |
+The practices cover advanced network design and configuration, including Layer 2 segmentation, redundancy protocols, dynamic routing, wireless integration, and network services — applied to realistic enterprise-scale scenarios.
 
 ---
 
-## Descripción del Repositorio
+## Practice 1 — Monte Alto School Network
 
-Este repositorio contiene las prácticas y proyectos correspondientes al laboratorio del curso **Redes de Computadoras 2**. En él se almacenan los archivos de simulación desarrollados en **Cisco Packet Tracer**, las guías de requerimientos, la documentación técnica y las evidencias de trabajo.
+Design and configuration of a multi-building campus network.
 
----
-
-## Contenido del Repositorio
-
-### [Práctica 1: Monte Alto y la conectividad](./Practica1/README.md)
-
-* **Ubicación:** `Practica1/`
-* **Archivo de simulación:** [`Practica1_G25.pkt`](./Practica1/Practica1_G25.pkt)
-* **Documentación técnica:** [`Practica1/README.md`](./Practica1/README.md)
-* **Documentos de referencia:** [`Practica1/docs/`](./Practica1/docs/)
-
-#### Temas Desarrollados:
-
-1. **Segmentación por VLAN:** Implementación de VLANs para niveles educativos (Primaria, Básicos y Bachillerato).
-2. **VLAN Trunking Protocol (VTP):** Administración centralizada de VLANs mediante switches en modos Server y Client.
-3. **Spanning Tree Protocol (STP / RSTP):** Comparativa entre PVST (Edificio Izquierdo) y Rapid PVST (Edificio Derecho), evaluando tiempos de convergencia ante fallas de enlace.
-4. **Seguridad de Puertos (Port-Security):** Restricción de direcciones MAC y políticas de puerto (*shutdown / err-disabled*) en la VLAN de Básicos.
-5. **Enrutamiento Dinámico:** Configuración e interconexión de protocolos EIGRP, RIP y OSPF con redistribución de rutas para lograr conectividad total en la red.
+**Topics covered:**
+- VLAN segmentation by academic level (Primary, Middle, High School)
+- VLAN Trunking Protocol (VTP) in Server/Client mode
+- Spanning Tree Protocol: PVST vs. Rapid PVST comparison
+- Port Security with MAC address restrictions and shutdown policies
+- Dynamic routing with EIGRP, RIP, and OSPF with route redistribution
 
 ---
 
-### [Práctica 2: Restaurante](<./Practica2/README.md>)
+## Practice 2 — Restaurant Multi-Floor Network
 
-* **Ubicación:** `Practica2/`
-* **Archivo de simulación:** [`Practica2_G25.pkt`](<./Practica2/Practica2_G25.pkt>)
-* **Documentación técnica:** [`Practica2/README.md`](<./Practica2/README.md>)
-* **Enunciado oficial:** [`0975_Practica_2_2S2026.pdf`](<./Practica2/docs/0975_Practica_2_2S2026.pdf>)
-* **Evidencias de subnetting:** [`Practica2/assets/evidence/`](<./Practica2/assets/evidence/>)
+Design and configuration of a multi-floor enterprise network.
 
-#### Temas de la Práctica:
-
-1. **Diseño de topología:** Organización de Piso 1, Piso 2, Piso 3 y Servicios Centrales.
-2. **Segmentación por VLAN:** VLAN 17 `ADMIN`, VLAN 27 `COCINA`, VLAN 37 `WEB_SERVERS` y VLAN 47 `DHCP_SERVERS`.
-3. **Subnetting VLSM/FLSM:** División de las redes de usuarios, servidores y enlaces de enrutamiento.
-4. **Enlaces troncales:** Transporte de VLAN entre switches multilayer y switches de acceso.
-5. **LACP / EtherChannel:** Agregación de enlaces entre los switches multilayer.
-6. **HSRP:** Redundancia de gateway en Piso 1 y Servicios Centrales.
-7. **Enrutamiento dinámico:** Configuración de EIGRP para la interconexión de la topología.
-8. **DHCP:** Asignación dinámica de direcciones para las VLAN cableadas y redes inalámbricas.
-9. **Redes inalámbricas:** Configuración de SSID, broadcast, WPA2, direccionamiento `/25` y asociación de clientes.
-10. **Servicios de red:** Configuración de DNS y HTTP para `www.practica2_Grupo7.com`.
-
+**Topics covered:**
+- VLAN design: ADMIN (17), COCINA (27), WEB\_SERVERS (37), DHCP\_SERVERS (47)
+- VLSM/FLSM subnetting for users, servers, and routing links
+- Trunk links between multilayer and access switches
+- LACP/EtherChannel link aggregation
+- HSRP for gateway redundancy
+- EIGRP dynamic routing
+- DHCP for wired VLANs and wireless networks
+- Wireless: SSID, WPA2, /25 addressing
+- DNS and HTTP services
 
 ---
 
-## Estructura de Directorios
+## Repository Structure
 
-```text
-REDES2_2S_2026_G25/
-├── README.md
+```
+network-design-cisco-packet-tracer/
 ├── Practica1/
-│   ├── Practica1_G25.pkt
-│   ├── README.md
-│   ├── assets/
-│   │   └── images/
+│   ├── Practica1_G25.pkt     # Cisco Packet Tracer simulation
+│   ├── README.md             # Technical documentation
+│   ├── assets/images/
 │   └── docs/
 └── Practica2/
-    ├── Practica2_G25.pkt
-    ├── README.md
-    ├── assets/
-    │   ├── evidence/
-    │   └── images/
+    ├── Practica2_G25.pkt     # Cisco Packet Tracer simulation
+    ├── README.md             # Technical documentation
+    ├── assets/evidence/
     └── docs/
 ```
 
 ---
 
-## Convenciones del Repositorio
+## Technologies
 
-* Cada práctica mantiene su propio manual técnico dentro de su carpeta.
-* Los archivos de Packet Tracer conservan la identificación del grupo `G25`.
-* Las evidencias se almacenan dentro de la carpeta `assets/` de la práctica correspondiente.
-* No se marca una configuración como completada sin verificarla en Cisco Packet Tracer.
+- Cisco Packet Tracer
+- Protocols: VTP, STP/RSTP, PVST, EIGRP, OSPF, RIP, HSRP, LACP
+- Services: DHCP, DNS, HTTP, WPA2
+
+---
+
+## Academic Context
+
+| Field       | Detail                                         |
+|-------------|------------------------------------------------|
+| Course      | Computer Networks 2 (REDES2)                   |
+| Institution | Universidad de San Carlos de Guatemala         |
+| Semester    | Second Semester 2026                           |
+| Type        | Group project                                  |
